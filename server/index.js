@@ -17,8 +17,14 @@ app.post('/api/gemini', async (req, res) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
     });
-    const data = await response.json();
-    res.json(data);
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      res.json(data);
+    } catch (jsonErr) {
+      console.error('Gemini API non-JSON response:', text);
+      res.status(502).json({ error: 'Gemini API returned non-JSON', raw: text });
+    }
   } catch (err) {
     res.status(500).json({ error: 'Gemini API error', details: err.message });
   }
@@ -40,8 +46,14 @@ app.post('/api/openai', async (req, res) => {
         max_tokens: 1024
       })
     });
-    const data = await response.json();
-    res.json(data);
+    const text = await response.text();
+    try {
+      const data = JSON.parse(text);
+      res.json(data);
+    } catch (jsonErr) {
+      console.error('OpenAI API non-JSON response:', text);
+      res.status(502).json({ error: 'OpenAI API returned non-JSON', raw: text });
+    }
   } catch (err) {
     res.status(500).json({ error: 'OpenAI API error', details: err.message });
   }
