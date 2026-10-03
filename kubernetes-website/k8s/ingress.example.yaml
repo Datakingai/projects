@@ -1,0 +1,22 @@
+# Replace ingressClassName with your installed controller's class.
+# Replace website.example.com and create website-tls in the website namespace first.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: website
+  namespace: website
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [website.example.com]
+      secretName: website-tls
+  rules:
+    - host: website.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: website
+                port: {name: http}
